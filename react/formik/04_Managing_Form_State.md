@@ -22,6 +22,8 @@ const YoutubeForm = () => {
 
         <label htmlFor='channel'>Channel</label>
         <input type='text' id='channel' name='channel' />
+
+        <button>Submit</button>
       </form>
     </div>
   )
@@ -142,6 +144,7 @@ En definitiva ¿qué pasos tenemos que seguir para poder lograr que **Formik** g
 3. Definir el valor del atributo `value` asociado a cada uno de los campos del formulario para que recoja el valor que está asociado al mismo dentro del objeto **Formik**.
 
 ## Componente final
+
 El código completo de nuestro componente tras la finalización de este apartado es el que se muestra a continuación:
 
 ```javascript
@@ -186,6 +189,8 @@ const YoutubeForm = () => {
           onChange={ formik.handleChange }
           value={ formik.value.channel }
         />
+
+        <button>Submit</button>
       </form>
     </div>
   )

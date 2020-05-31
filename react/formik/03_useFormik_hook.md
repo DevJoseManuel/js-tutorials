@@ -16,6 +16,8 @@ const YoutubeForm = () => (
 
       <label htmlFor='channel'>Channel</label>
       <input type='text' id='channel' name='channel' />
+
+      <button>Submit</button>
     </form>
   </div>
 )
@@ -71,6 +73,9 @@ A lo largo de este tutorial volveremos a mencionar varias veces estos tres punto
 
 ---
 
+
+## Componente final
+
 El código completo de nuestro componente tras finalizar este apartado es el que mostramos a continuación:
 
 ```javascript
@@ -91,6 +96,8 @@ const YoutubeForm = () => {
 
         <label htmlFor='channel'>Channel</label>
         <input type='text' id='channel' name='channel' />
+
+        <button>Submit</button>
       </form>
     </div>
   )
