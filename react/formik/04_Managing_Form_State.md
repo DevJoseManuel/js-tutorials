@@ -145,7 +145,7 @@ En definitiva ¿qué pasos tenemos que seguir para poder lograr que **Formik** g
 
 ## Componente final
 
-El código completo de nuestro componente tras la finalización de este apartado es el que se muestra a continuación:
+El código completo de nuestro componente tras la finalización de este punto es el que se muestra a continuación:
 
 ```javascript
 import React from 'react'

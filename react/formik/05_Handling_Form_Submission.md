@@ -38,8 +38,8 @@ const formik = useFormik({
     email: '',
     channel: ''
   },
-  onSubmit: value => {
-    console.log('Form data ', value)
+  onSubmit: values => {
+    console.log('Form data ', values)
   }
 })
 ```
@@ -69,7 +69,7 @@ Hasta aquí puede parecernos que el uso de **Formik** ha añadido más complejid
 
 ## Componente final
 
-El código completo de nuestro componente tras la finalización de este apartado es el que se muestra a continuación:
+El código completo de nuestro componente tras la finalización de este punto es el que se muestra a continuación:
 
 ```javascript
 import React from 'react'
@@ -82,8 +82,8 @@ const YoutubeForm = () => {
       email: '',
       channel: ''
     },
-    onSubmit: value => {
-      console.log('Form data ', value)
+    onSubmit: values => {
+      console.log('Form data ', values)
     }
   })
 

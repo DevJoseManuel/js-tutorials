@@ -76,7 +76,7 @@ A lo largo de este tutorial volveremos a mencionar varias veces estos tres punto
 
 ## Componente final
 
-El código completo de nuestro componente tras finalizar este apartado es el que mostramos a continuación:
+El código completo de nuestro componente tras finalizar este punto es el que mostramos a continuación:
 
 ```javascript
 import React from 'react'
