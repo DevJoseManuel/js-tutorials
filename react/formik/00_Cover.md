@@ -7,10 +7,11 @@ Todos aquellos tutoriales que tienen que ver con la utilización e implantación
 ### React Formik Tutorial
 1. Introducción.
 2. Formulario de ejemplo.
-3. [useFormik Hook](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/03_useFormik_hook.md)
+3. [useFormik Hook](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/03_useFormik_hook.md).
 4. [Gestión del estado del formulario](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/04_Managing_Form_State.md).
-5. [Envío del formulario (submit)](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/05_Handling_Form_Submission.md)
-6. Validaciones
+5. [Envío del formulario (submit)](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/05_Handling_Form_Submission.md).
+6. [Validaciones](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/06_Form_Validation.md).
+7. [Validation Function](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/07_Validation_Function.md).
 
 
 # Enlaces
