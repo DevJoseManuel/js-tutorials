@@ -176,6 +176,13 @@ A modo de resumen ¿cuáles son los pasos que tenemos que llevar a cabo cuando q
 
 Ahora que sabemos cómo realizar las validaciones sobre los campos de nuestro formulario en el siguiente punto veremos qué es lo que tenemos que hacer para poder mostrar el valor de los errores que han sido asignados a los campos del formulario en la **validation function**.
 
+---
+**Nota:** es importante que entendamos que el contenido de la función `validate` se ejecutará siempre que se produzca un cambio en alguno de los valores asociados a los campos del formulario, es decir, que en el momento en el que realizamos un cambio automáticamente el usuario podrá recibir feedback sobre si la información introducida es correcta o no.
+
+Otra cosa a tener en cuenta es que en el momento de carga inicial del formulario no se ejecutará la función `validate` ya que se considerará que el formulario no posee errores.
+
+---
+
 ## Componente final
 
 El código completo de nuestro componente tras la finalización de este punto es el que se muestra a continuación:
