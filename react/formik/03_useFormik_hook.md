@@ -29,9 +29,6 @@ Al igual que sucede con cualquier otra librería con la que vayamos a trabajar e
 
 ```console
 $ npm install formik
-+ formik@2.1.4
-added 13 packages from 11 contributors and audited 13 packages in 1.127s
-found 0 vulnerabilities
 ```
 
 Una vez finaliza la instalación ya podemos comenzar a trabajar con la librería. Lo primero que tenemos que hacer es importar dentro del código del componente el hook `useFormik`:
