@@ -14,10 +14,10 @@ Todos aquellos tutoriales que tienen que ver con la utilización e implantación
 7. [Validation Function](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/07_Validation_Function.md).
 8. [Mensajes de error](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/08_Displaying_Error_Messages.md).
 9. [Campos ya visitados](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/09_Visited_Fields.md).
-10. Mejoras en la validación (UX).
-11. Validación utilizando **yup**.
+10. [Mejoras en la validación (UX)](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/10_Improving_Validation_UX.md).
+11. [Validación utilizando **yup**](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/11_Schema_Validation_with_yup.md).
 12. Refactorización.
-13. El componente `Formik`.
+13. Los componentes de **Formik**..
 14. El componente `Form`.
 15. El componente `Field`.
 16. El componente `ErrorMessage`.
