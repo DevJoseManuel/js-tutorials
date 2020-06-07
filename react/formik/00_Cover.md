@@ -20,10 +20,10 @@ Todos aquellos tutoriales que tienen que ver con la utilización e implantación
 13. [Los componentes de **Formik**](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/13_Formik_Components.md).
 14. [El componente `Form`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/14_Form_Component.md).
 15. [El componente `Field`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/15_Field_Component.md).
-16. El componente `ErrorMessage`.
-17. Lo que hemos visto hasta ahora.
-18. Repensando el componente `Field`.
-19. Repensando el componente `ErrorMessage`.
+16. [El componente `ErrorMessage`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/16_ErrorMessage_Component.md).
+17. [Lo que hemos visto hasta ahora](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/17_Journey_so_Far.md).
+18. Revisando el componente `Field`.
+19. Revisando el componente `ErrorMessage`.
 20. Objetos animdados.
 21. Arrays.
 22. El componente `FieldArray`.
