@@ -6,5 +6,5 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 
 ### React
 * [Formik](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/00_Cover.md)
-* Framer Motion
+* [Framer Motion](https://github.com/DevJoseManuel/js-tutorials/tree/master/react/framer-motion)
 

@@ -1,4 +1,4 @@
-# Animando un eleemnto
+# Animando un elemento
 
 Vamos a comenzar a estudiar `framer-motion` explicando la acción más sencilla que podemos llevar a cabo con el mismo. En concreto vamos a ver qué es lo que tenemos que hacer para animar uno de los elementos de nuestra página. Para ello partiremos del siguiente componente de React que es el que se muestra cuando un usuario accede a nuestra aplicación:
 
