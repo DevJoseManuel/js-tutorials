@@ -5,6 +5,13 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 ## Índice
 
 ### React
+
+#### Core
+
+* [Hooks](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/hooks/00_Cover.md)
+
+#### Librerías
+
 * [Formik](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/00_Cover.md)
 * [Framer Motion](https://github.com/DevJoseManuel/js-tutorials/tree/master/react/framer-motion)
 
