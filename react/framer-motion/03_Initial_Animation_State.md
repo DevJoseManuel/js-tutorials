@@ -129,7 +129,6 @@ const Base = ({ addBase, pizza }) => {
 
   return (
     <div className='base container'>
-
       <h3>Step 1: Choose Your Base</h3>
       <ul>
         {
@@ -242,7 +241,7 @@ pizza.base && (
 
 En este punto hemos visto que podemos utilizar la prop `initial` para especificar todos aquellas propiedades CSS que nos ayudarán a definir el lugar desde el que se realizará la animación. Por otra parte tenemos la prop `animate` que nos servirá para definir todas las propiedades CSS que ha de tener el elemento en el momento en el que finalice la animación.
 
-## Componente final
+## Componentes finales
 
 El aspecto final de nuestro componente `Header` tras la finalización del estudio de este punto del tutorial es el que se muestra a continuación:
 
@@ -314,7 +313,6 @@ const Base = ({ addBase, pizza }) => {
 
   return (
     <div className='base container'>
-
       <h3>Step 1: Choose Your Base</h3>
       <ul>
         {
