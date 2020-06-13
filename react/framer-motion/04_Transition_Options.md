@@ -194,7 +194,7 @@ const Base = ({ addBase, pizza }) => {
           bases.map(base => {
             let spanClass = pizza.base === base ? 'active' : ''
             return (
-              <li key={ base } onClick={ () => addBase(base)}>
+              <li key={ base } onClick={ () => addBase(base) }>
                 <span className={spanClass}>{ base }</span>
               </li>
             )
@@ -381,7 +381,7 @@ const Base = ({ addBase, pizza }) => {
           bases.map(base => {
             let spanClass = pizza.base === base ? 'active' : ''
             return (
-              <li key={ base } onClick={ () => addBase(base)}>
+              <li key={ base } onClick={ () => addBase(base) }>
                 <span className={spanClass}>{ base }</span>
               </li>
             )
