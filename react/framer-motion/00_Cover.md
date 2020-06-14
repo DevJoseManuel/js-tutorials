@@ -10,7 +10,7 @@ Recopilazación de tutoriales que tienen que ver con el estudio y la utilizació
 2. [Animación de elementos](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/02_Animating_Element.md).
 3. [Estado inicial de la animación](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/03_Initial_Animation_State.md).
 4. [Opciones para las transiciones](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/04_Transition_Options.md).
-5. Animaciones `hover`.
+5. [Animaciones `hover`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/05_Hover_Animations.md).
 6. Variants (Parte 1).
 7. Varianst (Parte 2).
 8. Keyframes.

@@ -4,6 +4,12 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 
 ## Índice
 
+### JavaScript
+
+#### Arrays
+
+* `Array.prototype.flat()`
+
 ### React
 
 #### Core
