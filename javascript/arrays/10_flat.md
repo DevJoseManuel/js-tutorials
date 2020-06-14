@@ -135,6 +135,8 @@ Si ahora volvemos a ejecutar este código ya sea desde la terminal de comandos d
 
 Lo que hemos conseguido ha sido transformar nuestro array original de apartida en un array donde todos sus elementos son valores simples.
 
+¿Qué sucedería en el caso de que el valor que se le pasa como parámetro a `flat` fuese superior al número de niveles que se puede aplanar? Pues que en último caso nos quedaríamos con un array de una dimensión porque tenemos que pensar que si aplicamos `flat` a un array de una única dimensión este método nos retornará el mismo array.
+
 A modo de conclusión simplemente decir que `flat` es un método que los arrays de JavaScript nos ofrecen para reducir el número de dimensiones que lo forman conservando los elementos y el orden de los mismos lo cual suele ser conveniente en determinados casos de uso.
 
 ---

@@ -6,9 +6,9 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 
 ### JavaScript
 
-#### Arrays
-
-* `Array.prototype.flat()`
+#### Core
+ 
+* [Arrays](https://github.com/DevJoseManuel/js-tutorials/blob/master/javascript/arrays/00_Cover.md).
 
 ### React
 

@@ -4,4 +4,5 @@ Recopilación de tutoriales en los que se tratan cuestiones a la hora de trabaja
 
 ## Índice
 
-* `Array.prototype.flat()`
+* [flat](https://github.com/DevJoseManuel/js-tutorials/blob/master/javascript/arrays/10_flat.md)
+* flatMap
