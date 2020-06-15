@@ -4,5 +4,5 @@ Recopilazación de tutoriales que tienen que ver con el estudio y la utilizació
 
 ## Índice
 
-* `useMemo`
+* [`useMemo`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/hooks/05_useMemo.md).
 * [`useRef`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/hooks/10_useRef.md)
