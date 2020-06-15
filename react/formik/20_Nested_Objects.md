@@ -23,7 +23,81 @@ Este tipo de estructura de datos nos puede valer en la mayoría de las ocasiones
 
 Al final lo que queremos hacer es poder agrupar varios de los campos de nuestros formularios de una manera determinada para poderlos utilizar como precisemos. Sea cual sea la razón vamos a tener que utilizar lo que se conoce como los objetos anidados o **nested objects**.
 
+Como hemos hecho en los puntos anteriores del tutorial vamos a ver cómo trabajar con los **nested objects** basándonos en un ejemplo. Para ello vamos a suponer que en nuestro formulario para recoger el voto de un usuario acerca de su canal favorito de Youtube queremos recolectar información acerca de cuáles son sus cuentas en redes sociales por lo que vamos a utilizar dos nuevos campos para que el usuario nos proporcione cuál es su cuenta de Facebook y su cuenta de Twitter, siempre que nos lo quiera facilitar.
 
+Aunque en principio estos dos datos pueden ser considerados como separados nosotros vamos a tratarlos como un **nested object** para lo cual simplemente vamos a tener que seguir dos pasos muy sencillos. El primero de ellos, y como sucede con cualquier otro campo de nuestros formulario, tendremos que definir el atributo dentro del objeto `initialValues` que contendrá los valores de estos dos campos. En nuestro caso, como queremos crear un **nested object** lo que haremos será definir un único atributo el cual será igual a un objeto. Inicialmente llamamos a este atributo `social`:
+
+```javascript
+const initialValues = {
+  name: '',
+  email: '',
+  channel: '',
+  comments: '',
+  address: '',
+  social: {}
+}
+```
+
+Pero ¿qué atributos tenemos que definir en este nuevo objeto? Pues sencillamente un atributo por cada uno de los campos que queremos queremos agrupar que en el caso de nuestro ejemplo será un campo (atributo) para recoger la información de la cuenta de Facebook del usuario y otro campo para recoger la información de la cuenta de Twitter (haciendo además que ambos campos incialmente estén inicializados a un string vacío):
+
+```javascript
+const initialValues = {
+  name: '',
+  email: '',
+  channel: '',
+  comments: '',
+  address: '',
+  social: {
+    facebook: '',
+    twitter: ''
+  }
+}
+```
+
+En segundo lugar tendremos que escribir el código JSX que se encargue de mostrar el marcado necesario para recoger la información de los dos nuevos campos de nuestro formulario. Como este paso es algo que ya hemos realizado varias veces a lo largo de este tutorial simplemente mostramos el código JSX del que partiremos para mostrar uno de los dos nuevos campos:
+
+```javascript
+<div className='form-control'>
+  <label htmlFor='facebook'>Facebook profile</label>
+  <Field type='text' id='facebook' name='social.facebook' />
+</div>
+```
+
+Aquí en lo que tenemos que fijarnos es en el valor de la prop `name` al que le hemos establecido el valor `social.facebook` lo que nos viene a indicar (por el hecho de tener un punto `.` en el medio) que estamos haciendo referencia a un objeto (el que está asociado al atributo `social` dentro del objeto de **Formik** que recoge el estado del formulario) y dentro de ese objeto a un atributo concreto del mismo (en este caso al atributo `facebook` del objeto `social`).
+
+Repitiendo este proceso para el campo que recoge la información de la cuenta de Twitter del usuarios tendríamos lo siguiente:
+
+```javascript
+<div className='form-control'>
+  <label htmlFor='facebook'>Facebook profile</label>
+  <Field type='text' id='facebook' name='social.facebook' />
+</div>
+<div className='form-control'>
+  <label htmlFor='twitter'>Twitter profile</label>
+  <Field type='text' id='twitter' name='social.twitter' />
+</div>
+```
+
+Si ahora volvemos a recargar la página, rellenamos la información de todos los campos de nuestro formulario y pulsamos sobre el botón **Submit** el aspecto del objeto de **Formik** que contiene los campos del formulario junto con sus valores tendrá el siguiente aspecto:
+
+```console
+{
+  name: 'user name',
+  email: 'user@example.com`,
+  channel: `youtube channel`,
+  comments: `user comments`,
+  address: `user address`
+  social: {
+    facebook: 'Facebook account',
+    twitter: '@twitterAccount'
+  }
+}
+```
+
+Por lo tanto siempre que queramos agrupar campos dentro de nuestros formularios tendremos que hacer uso de los denominados **nested objects**. Para conseguirlo simplemente tendremosq ue seguir dos sencillos pasos:
+
+1. Tendremos que definir el atributo dentro del objeto `initialVales` que recogerá la información de los campos de nuestro formulario que queremos agrupar como un objeto. Dentro de este objeto tendremos que definir un atributo por cada uno de los campos que queremos agrupar junto con el valor inicial para los mismos.
+2. En segundo lugar tenemos que estar seguros de que cuando definimos el campo del formulario que contendrá el **nested object** en la prop `name` tendremos que asegurarnos de que estamos utilizando la notación con un punto `.` (**dot notation**) que nos permita navegar hasta el **nested object** y que dentro de del mismo naveguemos hasta el atributo.
 
 ## Componente final
 
@@ -40,7 +114,11 @@ const initialValues = {
   email: '',
   channel: '',
   comments: '',
-  address: ''
+  address: '',
+  social: {
+    facebook: '',
+    twitter: ''
+  }
 }
 
 const validationSchema = Yup.object({
@@ -117,6 +195,23 @@ const YoutubeForm = () => {
               )
             }
           </Field>
+        </div>
+
+        <div className='form-control'>
+          <label htmlFor='facebook'>Facebook profile</label>
+          <Field
+            type='text'
+            id='facebook'
+            name='social.facebook'
+          />
+        </div>
+        <div className='form-control'>
+          <label htmlFor='twitter'>Twitter profile</label>
+          <Field
+            type='text'
+            id='twitter'
+            name='social.twitter'
+          />
         </div>
 
         <button type='submit'>Submit</button>

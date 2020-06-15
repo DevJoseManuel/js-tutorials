@@ -29,6 +29,9 @@ Todos aquellos tutoriales que tienen que ver con la utilización e implantación
 21. Arrays.
 22. El componente `FieldArray`.
 23. El componente `FastField`.
+24. ¿Cuándo se ejecuta la validación del formulario?
+25. Validación a nivel de campo.
+26. Lanzamiento manual de la validación.
 
 # Enlaces
 * <https://jaredpalmer.com/formik/>
