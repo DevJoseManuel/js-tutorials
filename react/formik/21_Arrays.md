@@ -34,7 +34,7 @@ En segundo lugar lo que tenemos que hacer es crear el código JSX que nos va a p
 </div>
 ```
 
-En principio el código JSX no es muy diferente del que hemos escrito para mostrar cualquiera de otros campos de nuestro formulario excepto por el valor que le asignamos a la prop `name` dentro del componente `Field` de **Formik** ya que estaremos indicando que el valor del campo cuyo `id` es `primaryPh` será guardado en la posición 0 del array asignado al atributo `phoneNumbers` dentro del objeto **Formik** que gestiona el estado del formulario (el cual representará al número de teléfono principal) y el valor del campo cuyo `ìd` es `secondaryPh`
+En principio el código JSX no es muy diferente del que hemos escrito para mostrar cualquiera de lost otros campos de nuestro formulario excepto por el valor que le asignamos a la prop `name` dentro del componente `Field` de **Formik** ya que ahora estaremos indicando que el valor del campo cuyo `id` es `primaryPh` será guardado en la posición 0 del array asignado al atributo `phoneNumbers` dentro del objeto **Formik** que gestiona el estado del formulario (el cual representará al número de teléfono principal) y el valor del campo cuyo `ìd` es `secondaryPh` será guardado en la posición 1 del array asignado al atributo `phoneNumbers`.
 
 
 
