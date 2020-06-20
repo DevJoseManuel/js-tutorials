@@ -25,8 +25,8 @@ Todos aquellos tutoriales que tienen que ver con la utilización e implantación
 17. [Lo que hemos visto hasta ahora](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/17_Journey_so_Far.md).
 18. [Revisando el componente `Field`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/18_Field_Revisited.md).
 19. [Revisando el componente `ErrorMessage`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/19_ErrorMessage_Revisited.md).
-20. Objetos anidades (Nested Objects).
-21. Arrays.
+20. [Objetos anidades (Nested Objects)](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/20_Nested_Objects.md).
+21. [Arrays](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/21_Arrays.md).
 22. El componente `FieldArray`.
 23. El componente `FastField`.
 24. ¿Cuándo se ejecuta la validación del formulario?
