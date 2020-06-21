@@ -6,4 +6,6 @@ Recopilación de tutoriales que tienen que ver con el estudio de la librería **
 
 ### React & Material UI
 
-* [`makeStyles`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/03_makeStyles.md)
+* [`makeStyles`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/03_makeStyles.md).
+* [`Button`](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/04_Button.md).
+* `Typography`
