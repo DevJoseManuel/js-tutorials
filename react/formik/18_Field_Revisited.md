@@ -193,7 +193,7 @@ Si dejamos el código anterior tal cual el nuevo campo de texto para recoger la 
 
 Y si guardamos nuestro formulario y lo mostramos dentro de un navegador web con la consola de JavaScript dentro de la herramientas para desarrolladores veremos que en la consola se muestra algo como lo siguiente:
 
-```console
+```javascript
 Render props
 > { field: {...}, form: {...}, meta: {...}}
   > field: { name: 'address', value: '', onChange: f, onBlur: f }

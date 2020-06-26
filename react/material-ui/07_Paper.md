@@ -60,4 +60,5 @@ Esta prop la tenemos a nuestra disposición en **todos los componentes de Materi
 
 ## Enlaces de interés.
 
-* [API de `Paper`](https://material-ui.com/api/paper/)
+* [Paper en Material UI](https://material-ui.com/components/paper/#paper).
+* [API de `Paper`](https://material-ui.com/api/paper/).

@@ -36,7 +36,26 @@ En segundo lugar lo que tenemos que hacer es crear el código JSX que nos va a p
 
 En principio el código JSX no es muy diferente del que hemos escrito para mostrar cualquiera de lost otros campos de nuestro formulario excepto por el valor que le asignamos a la prop `name` dentro del componente `Field` de **Formik** ya que ahora estaremos indicando que el valor del campo cuyo `id` es `primaryPh` será guardado en la posición 0 del array asignado al atributo `phoneNumbers` dentro del objeto **Formik** que gestiona el estado del formulario (el cual representará al número de teléfono principal) y el valor del campo cuyo `ìd` es `secondaryPh` será guardado en la posición 1 del array asignado al atributo `phoneNumbers`.
 
+Si ahora volvemos a cargar el formulario en nuestro navegador rellenándolo con valores para cada uno de los campos del mismo el objeto que contendrá todos los valores que son enviados tendrá un aspecto parecido al siguiente:
 
+```javascript
+{
+  name: 'user name',
+  email: 'user@example.com',
+  channel: `youtube channel`,
+  comments: `user comments`,
+  address: `user address`
+  social: {
+    facebook: 'Facebook account',
+    twitter: '@twitterAccount'
+  },
+  phoneNumbers: ['123', '456']
+}
+```
+
+Por lo tanto hemos visto que **Formik** nos ofrece la posibilidad de trabajar tanto con objetos anidados (nested objects) como con arrays. Los objetos animados nos van a permitir agrupar información procedente de diferentes campos de forma que estén contenidos en un mismo objeto que los puede moldear mientras que los arrays deberíamos pensar en utilizarlos en todas aquellas situaciones en las que esperamos trabajar con una lista de valores.
+
+Aunque en principio la validación de este tipo de campos puede parecer un tanto compleja de realizar tenemos que pensar en que tenemos el control total de los datos que serán enviados por el usuario lo que se traduce en que en nuestra función de validación vamos a tener el acceso a todos los campos que forman el estado del formulario y como tal vamos a poder practicar las validaciones oportunas sobre los mismos.
 
 ## Componente final
 

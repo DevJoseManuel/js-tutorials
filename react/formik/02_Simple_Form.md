@@ -16,7 +16,7 @@ A medida que vayamos avanzando en el tutorial veremos como **Formik** implementa
 
 Con esto en mente vamos a mostrar el componente de React del que partiremos para seguir avanzando en la explicación. Lo primero que tenemos que entender es que hemos creado una nueva aplicación de React gracias al uso `create-react-app`. Si queremos denominar a la aplicación como `react-formik-demo` deberemos escribir en la terminal de nuestro sistema lo siguiente:
 
-```console
+```javascript
 $ create-react-app react-formik-demo
 ```
 

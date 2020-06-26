@@ -4,7 +4,7 @@ En el formulario de ejemplo que estamos utilizando hasta ahora estamos definiend
 
 Esto que puede sonar algo confuso se ve bien si cargamos el formulario dentro de un navegador web, rellenamos los campos del formulario y pulsamos sobre el botón **Submit** para que en al consola de JavaScript dentro de las herramientas para desarroladores veamos los pares campo-valor que se habrán enviado:
 
-```console
+```javascript
 {
   name: 'user name',
   email: 'user@example.com`,
@@ -80,13 +80,13 @@ Repitiendo este proceso para el campo que recoge la información de la cuenta de
 
 Si ahora volvemos a recargar la página, rellenamos la información de todos los campos de nuestro formulario y pulsamos sobre el botón **Submit** el aspecto del objeto de **Formik** que contiene los campos del formulario junto con sus valores tendrá el siguiente aspecto:
 
-```console
+```javascript
 {
   name: 'user name',
-  email: 'user@example.com`,
-  channel: `youtube channel`,
-  comments: `user comments`,
-  address: `user address`
+  email: 'user@example.com',
+  channel: 'youtube channel',
+  comments: 'user comments',
+  address: 'user address',
   social: {
     facebook: 'Facebook account',
     twitter: '@twitterAccount'

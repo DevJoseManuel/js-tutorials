@@ -94,7 +94,7 @@ console.log(arr)
 
 Si ahora ejecutamos nuestro código desde la terminal de comandos utilizando **Node.js** o bien desde la consola de JavaScript dentro de la las herramientas para adminitradores obtendremos el siguiente resultado:
 
-```console
+```javascript
 [1, 2, 3, 4, 5, 6, 7, 8, 9, [10, 11], [12, 13]]
 ```
 
@@ -129,7 +129,7 @@ Y sobre ella volve a ejecutar el método `flat` para obtener el resultado de la 
 
 Si ahora volvemos a ejecutar este código ya sea desde la terminal de comandos de nuestro sistema o desde la consola de JavaScript dentro de las herramientas para desarrolladores de un navegador web obtendríamos:
 
-```console
+```javascript
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 ```
 

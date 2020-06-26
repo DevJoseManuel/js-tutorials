@@ -191,19 +191,19 @@ Además si queremos mostrar tanto el valor actual que ha sido introducido en el 
 
 En este caso lo que tenemos que saber es que la primera vez que se renderice el componente el mensaje que será mostrado por la pantalla será:
 
-```console
+```javascript
 Your name is and it used to be 
 ```
 
 Es decir, que tanto el valor de la variable `name` como el valor que está asignado a la **ref** `prevName` en su atributo `current` estarán vacíos. Si ahora escribimos un caracters (por ejemplo, `a`) en el campo de texto el mensaje que se muestra por la pantalla será:
 
-```console
+```javascript
 Your name is a it used to be
 ```
 
 Es decir, que ahora el valor de la variable `name` dentro del estado será `a` pero sin embargo el valor del atributo `current` del objeto **ref** seguirá siendo la cadena vacía recogiendo el valor que previamente tenía la variable `name`. Si ahora tecleamos, por ejemplo, `b` el mensaje que se nos mostrará será:
 
-```console
+```javascript
 Your name is ab it used to be a
 ```
 

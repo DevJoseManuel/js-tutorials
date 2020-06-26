@@ -27,7 +27,7 @@ export default YoutubeForm
 
 Al igual que sucede con cualquier otra librería con la que vayamos a trabajar en nuestras aplicaciones, lo primero que tenemos que hacer es instalar **Formik** en nuestro proyecto. Para ello abrimos una terminal de comandos en nuestra máquina y escribiremos:
 
-```console
+```javascript
 $ npm install formik
 ```
 

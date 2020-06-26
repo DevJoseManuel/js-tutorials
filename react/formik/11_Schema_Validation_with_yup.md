@@ -4,7 +4,7 @@ En este punto vamos a ver la alternativa que tenemos para poder realizar las val
 
 Como siempre que trabajamos con una nueva librería el primer paso que tendremos que hacer será instalarla en nuestro proyecto por lo que desde la terminal de comandos de nuestro equipo escribiremos:
 
-```console
+```javascript
 $ npm install yup
 ```
 
