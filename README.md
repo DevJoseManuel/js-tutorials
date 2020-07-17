@@ -6,18 +6,18 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 
 ### JavaScript
 
-#### Core
- 
+* [Core](https://github.com/DevJoseManuel/js-tutorials/blob/master/javascript/core/00_Cover.md).
 * [Arrays](https://github.com/DevJoseManuel/js-tutorials/blob/master/javascript/arrays/00_Cover.md).
 
 ### React
 
 #### Core
 
-* [Hooks](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/hooks/00_Cover.md)
+* [Hooks](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/hooks/00_Cover.md).
 
 #### Librerías
 
-* [Formik](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/00_Cover.md)
-* [Framer Motion](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/00_Cover.md)
-* [Material UI](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/00_Cover.md)
+* [Formik](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/00_Cover.md).
+* [Framer Motion](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/00_Cover.md).
+* [Material UI](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/00_Cover.md).
+* Redux
