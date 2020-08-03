@@ -6,4 +6,4 @@ Recopilación de tutoriales que tienen que ver con el estudio de la librería **
 
 ### Core
 
-* Código límpio
+* [Código límpio](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/redux/06_Clean_Code.md)

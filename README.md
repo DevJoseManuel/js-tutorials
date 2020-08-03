@@ -20,4 +20,4 @@ Tutoriales relacionados con el desarrollo JavaScript y React que cubren aspectos
 * [Formik](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/formik/00_Cover.md).
 * [Framer Motion](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/framer-motion/00_Cover.md).
 * [Material UI](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/material-ui/00_Cover.md).
-* Redux
+* [Redux](https://github.com/DevJoseManuel/js-tutorials/blob/master/react/redux/00_Cover.md)
