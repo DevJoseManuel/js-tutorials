@@ -1,3 +1,3 @@
 # Understanding TypeScript.
 
-- [TypeScript Basics & Basic Types]('./ch02/02_00.md')
+- [TypeScript Basics & Basic Types]("/ch02/02_00.md")
