@@ -2,6 +2,9 @@
 
 - Introduction.
 - Install and Run Jest.
+- Compile Modules with Babel in Jest Tests.
+- Testing Browser or NodeJS.
+- Support Importing CSS Files.
 
 # Introduction.
 
@@ -104,7 +107,7 @@ es decir que el script que queremos que se ejecute como parte del proceso de CD/
   "setup": "npm install && npm run validate"
 }
 ```
- 
+
 La ejecución de `npm install` servirá para poder instalar todas las dependencias del nuestro proyecto (es decir, todas las librerías que son necesarias para su ejecución) mientras que en la segunda parte del script lo que se está pidiendo es la ejecución del script `validate` que también está recogido dentro del fichero (gracias a la ejecución de `npm run`). ¿Cuál es el aspecto de este script? Lo vemos a continuación:
 
 ```json
@@ -149,3 +152,493 @@ Lo que nosotros queremos hacer es que en el caso de que se pase la fase de anál
 
 Así garantizamos que cuando se ejecute el script `validate` se realizará el análisis del código estático, se ejcutarán todos los test y, si no se ha producido ningún error, se construirá el entregable de nuestra aplicación cosa que es lo que pretendemos conseguir gracias a nuestro proceso de CD/CI.
 
+## Compile Modules with Babel in Jest Tests
+
+Vamos a ahora a ver cómo podemos aplicar lo estudiado en los puntos anteriores dentro de nuestro proyecto de la calculadora. Lo primero que vamos a hacer es probar una de la funciones que está recogida en el fichero `utils.js` situado en el directorio `shared` dentro de `src` para lo cual, el equipo de desarrollo ha decidido que dentro de los directorios con el código fuente de la aplicación se va a crear un subdirection `__tests__` donde se recogerán los archivos con los test sobre los ficheros de dicho directorio.
+
+Es más, se decide que dentro de este directorio `__tests__` el nombre de los archivos que va a contener será igual al nombre del archivo que contiene el código que se va a comprobar. Por lo tanto, crearemos el fichero `utils.js` dentro de este directorio y dentro del mismo escribiremos un test muy sencillo:
+
+```js
+import { getFormattedValue } from '../utils'
+
+test('formats the value', () => {
+  expect(getFormattedValue('1234.0')).toBe('1,234.0')
+})
+```
+
+Es decir, que lo que estamos haciendo es importar la función `getFormattedValue` del fichero `utils.js` y pasar a utilizar dentro de un test. ¿Qué sucede ahora si ejecutamos los test dentro de nuestra aplicación?
+
+```bash
+$ npm run test
+  [...]
+FAIL  src/shared/__tests__/utils.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+```
+
+la ejecución del test estará fallando porque Jest nos informa de que se está encontrando con un token (elemento dentro del código del archivo con los test) que no entiende que en nuestro caso es la palabra reservada `import`. Pero ¿por qué? Pues la razón no es otra que Jest se ejecuta utilizando NodeJS y por defecto NodeJS no entiende el significado de esta palabra por lo que vamos a tener que hacer algunas acciones para poder configurarlo.
+
+En nuestro proyecto de ejemplo ya hemos dicho que estamos utilizando webpack para lograr construir el bundle con el código de nuestra aplicación. Es más, sabemos que el archivo que contiene la configuración de webpack para un proyecto es `webpack.config.js`. Sin entrar en demasiados detalles acerca de lo que nos podemos encontrar dentro de este archivo nos centraremos únicamente en las regla (`rule`) que está definida para todos los archivo con la extensión `.js` del proyecto:
+
+```js
+{
+  test: /\.js$/,
+  exclude: /node_modules/,
+  use: 'babel-loader'
+}
+```
+
+básicamente lo que estamos diciendo aquí es que para todos los archivos con la extensión `.js` que haya en el proyecto lo que queremos es que Webpack pase a utilizar el loader `babel-loader` y dejando las opciones de transpilación del mismo a Babel. Ahora ¿qué opciones de configuración tenemos recogidas en el fichero `.babelrc.js`? Pues de todas ellas la que nos interesa es la siguiente:
+
+```js
+presets: [
+  ['@babel/preset-env', { modules: false }]
+]
+```
+
+en el que estamos indicando que no queremos de Babel compile los módulos que formarán parte de nuestra aplicación ya que vamos a confiar en Webpack para que se encargue de realizar esta tareas y por lo tanto que nuestro código entienda perfectamente las sentencias `import`.
+
+Bien ¿cuál es aquí el problema? Pues Jest toma el contenido del archivo `.babelrc` para determinar la opciones de compilación que ha de llevar a cabo y las aplica a todos los archivos de test. Así, cuando en nuestro test se encuentra con la sentencia `import` no sabe interpretarla y nos lanza el mensaje de error. Es más, si quitamos esta opción dentro del fichero `.babelrc.js` dejándola como sigue:
+
+```js
+presets: [
+  ['@babel/preset-env']
+]
+```
+
+Si ahora volvemos a ejecutar nuestros test desde la terminal del sistema podremos ver como el error ha desaparecido y el test pasa sin problemas:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+  ✓ formats the value (3ms)
+```
+
+Claro está que hemos conseguido arreglar el problema derivado de no poder ejecutar los test dentro de nuestra aplicación pero a costa de perder los beneficios que nos proporciona Webpack a la hora de gestionar los módulos de nuestra aplicación y en concreto lo que se conoce como [Tree Shaking](https://webpack.js.org/guides/tree-shaking/) que, básicamente, viene a ser un mecanismo por el que es capaz de detectar todas aquellas partes del código de nuestro entregable de la aplicación con código duplicado y gestionarlo de tal manera que no sea así.
+
+¿Qué podemos hacer para resolver esta situación? Es decir, ¿qué podemos hacer par que cargue la gestión de módulos sea llevada a cabo por Webpack en el caso de estar construyendo el entregable de la aplicación y en qué casos dejar que sea Babel quien los gestione (sobre todo cuando vamos a ejecutar los test de la aplicación)? Pues la solución pasa por determinar si se están ejecutando los test o no gracias a la comprobación de una variable de entorno que Jest introduce cuando se está ejecutando. Dicha variable es `NODE_ENV` y el valor que Jest le asignará será `test`.
+
+Así pues en el fichero `.babelrc.js` escribiremos lo siguiente:
+
+```js
+const isTest = String(process.env.NODE_ENV) === 'test'
+```
+
+Una vez tenemos que el valor de esta variable ya pordemos establecer el valor de las opciones que se le pasan al *preset* `preset-env` de tal manera que si esta variable es `true` lo que queremos es que los módulos sean compilados por NodeJS (lo que implicará que se establezca la opción `commonjs`) y en el caso de que no sea así no querremos que los módulos sean compilados (lo que implica asignarle el valor `false`) y por lo tanto será Webpack quien al final se encargará de ello.
+
+```js
+presets: [
+  [
+    '@babel/preset-env',
+    {
+      modules: isTest ? 'commonjs' : false
+    }
+  ]
+]
+```
+
+Hecho este cambio si ahora volvemos a ejecutar los test que de la aplicación veremos que todos pasan ya que la opción de compilación de los módulos ahora está bien configurada.
+
+```bash
+$ npm run test
+  [...]
+FAIL  src/shared/__tests__/utils.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+```
+
+>
+> Jest toma por defecto las opciones de configuración que hayan sido establecidas en el fichero `.babelrc.js` lo que viene a quitar mucho trabajo de configuración dentro de nuestros proyectos.
+>
+
+## Testing Browser or NodeJS
+
+Jest hace una gran cantidad de cosas por nosotros en lo que respecta a las opciones de ejecución siendo una de ellas el simular un entorno de ejecución de un navegador dentro de NodeJS (que recordemos que es donde realmente se está ejecutando Jest) apoyándose en un módulo que denominado jsdom. Pero ¿qué es lo que estamos queriendo decir con esto? Pues que dentro de código de nuestros test vamos a poder hacer algo como lo siguiente:
+
+```js
+test('formats the value', () => {
+  console.log(window)
+})
+```
+
+y cuando ejecutásemo este test por la consola se nos va a mostrar el objeto `window` que está disponible en cualquier navegador. Lo que aquí tenemos que entender es que Jest se ejecuta en NodeJS y sabemos que en este entorno de ejecución no existe algo como el objeto `window` del navegador por lo que el hecho de que no se produzca un error cuando estamos ejecutando el código anterior.
+
+Si volvemos al ejemplo de la función que estamos intentando probar en el test que hemos definido y más concretamente nos fijamos en el código de la misma:
+
+```js
+function getFormattedValue(value, language = 'en-US') {
+  let formattedValue = parseFloat(value).toLocaleString(language, {
+    useGrouping: true,
+    maximumFractionDigits: 6
+  })
+
+  // Add back missing .0 in e.g 12.0
+  const match = value.match(/\.\d*?(0*)$/)
+
+  if (match) {
+    formattedValue += /[1-9]/.test(match[0]) ? match[1] : match[0]
+  }
+
+  return formattedValue
+}
+
+export { getFormattedValue }
+```
+
+podemos observar que se trata de un código genérico en el sentido de que no precisa del uso de algún ejemplo concreto de un entorno de ejecución para ser ejecutado (no hace uso de objetos propios del navegador o de NodeJS para hacer su trabajo). Esto quiere decir que si la estamos utilizando en un entorno NodeJS debería existir una forma de indicarle a Jest que así se trata y por lo tanto que este pueda hacer una serie de optimizaciones que hagan que los test se ejecuten mucho más rápido y que precisen de menos recursos ya que no hará falta hacer uso de la librería jsdom.
+
+¿Cómo podemos lograr esto? Pues pasándole el valor `node` al flag `env` a la hora de invocar nuestros test. Como en nuestro caso hemos visto que los test se ejecutan gracias a npm para poder pasárle un flag a su invocación necesitaremos utilizar el doble guión `--` y posteriormente para indicarle el flag para Jest deberemos escribir `--env=node`. Así desde la terminal de comandos escribiremos:
+
+```bash
+$ npm run test -- --env=node
+```
+
+siendo el resultado el mismo que en el punto anterior (es decir, que el único test que se ejecuta pasa) pero el tiempo de ejecución del mismo ha sido mucho menor ya que Jest no ha tenido que inicializar en ningún momento jsdom. Es más, si volvemos a pedir en nuestro test que se escriba el objeto `window` y lo ejecutamos se nos mostrará un error como el siguiente en el que se nos indicará que dicho objeto no está definido:
+
+```bash
+$ npm run test -- --env=node
+
+ FAIL  src/shared/__tests__/utils.js
+  ● Test suite failed to run
+
+    ReferenceError: window is not defined
+```
+
+El problema aquí es que vamos a tener que acordarnos de pasar este flag cada vez que ejecutemos nuestros test y esto no suele ser práctico. La solución pasa por crear un nuevo fichero configuración para Jest en la raíz de nuestro proyecto con el nombre `jest.config.js` donde únicamente lo que vamos a hacer es exportar un objeto con la configuración que vamos a aplicar.
+
+En nuestro caso como queremos decir que nuestro entorno de ejecución es NodeJS lo que tenemos que establecer es el valor del atributo `testEnvironment` del objeto con el valor `jest-environment-node` y de esta manera quedará establecido por defecto que el entorno de ejecución será NodeJS:
+
+```js
+module.exports = {
+  testEnvironment: 'jest-environment-node'
+}
+```
+
+Con este fichero dentro de nuestro sistema si ahora desde la terminal de nuestro sistema volvemso a llamar al script para la ejecución de los test (sin pasarle ningún tipo de flag) Jest pasa a tomar las opciones declaras dentro del mismo, determinará que el entorno de ejecución es NodeJS y por lo tanto no sabe de la existencia del objeto `window` mostrándonos el mismo error que cuando estabamos trabajando con el flag.
+
+```bash
+$ npm run test
+
+ FAIL  src/shared/__tests__/utils.js
+  ● Test suite failed to run
+
+    ReferenceError: window is not defined
+```
+
+---
+**Nota:** podíamos especificar de forma explícita que queremos que Jest incluya jsdom a la hora de ejecutar nuestros test sin más que escribir lo siguiente en el fichero de configuración `jest.config.js`
+
+```js
+module.exports = {
+  testEnvironment: 'jest-environment-jsdom'
+}
+```
+
+pero al tratarse de la opción por defecto no se suele hacer.
+
+---
+**Nota:** ¿dónde están estos dos posibles valores para el entorno de ejecución? En otras palabras, ¿cómo los determina Jest? Pues la respuesta es que dentro del directorio `node_modules` de nuestro proyecto nos vamos a encontrar con los directorios `jest-environment-jsdom` y `jest-environment-node` con las opciones y herramientas necesarias para la ejecución de cada uno de ellos.
+
+Y no solamente eso sino que la razón por la que existen estos entornos de ejecución para nuestros test es que vamos a poder utilizar cualquier otro que cumpla con las características que especifica Jest (un entorno de ejecución propio o de terceros) pero este es un aspecto que se escapa de ámbito de explicación de este manual.
+
+---
+
+>
+> Por lo general y siempre y cuando el rendimiento a la hora de ejecutar nuestros test no sea una cuestión de vital importancia en el proyecto se suele dejar la opción de utilizar jsdom para que los test de Jest corran en gran parte de los entornos de ejecución.
+>
+
+## Support Importing CSS Files.
+
+Vamos a intentar avanzar un poco más en la forma de realiazar los test en nuestras aplicaciones y vamos a centrarnos en cómo podríamos reaizar el test sobre un componente de React que esté recogido dentro del directorio `shared` de nuestro proyecto y que se denomine `AutoScalingText`.
+
+Siguiendo con el patrón que hemos descrito en los puntos anteriores lo primero que tendríamos que hacer sería crear un nuevo archivo dentro del directorio `__tests__` que está asociado al directorio `shared` y dentro del mismo escribiríamos el siguiente test:
+
+```js
+import React from 'react'
+import { render } from '@testing-library/react'
+import AutoScalingText from '../auto-scaling-text'
+
+test('renders', () => {
+  render(<AutoScalingText />)
+})
+```
+
+---
+**Nota:** en este punto no nos interesa detenernos en entender cómo se están realizando los test sobre los componentes de React ya que es algo que vamos a dejar para un capítulo posterior. Lo que sí que tenemos que tenemos que aclarar en este punto es que para realizar los test de React vamos a apoyarnos en el utilización de la librería `testing-library/react` por lo que el primer paso será instalarla como una dependencia de desarrollo:
+
+```bash
+$ npm install --save-dev testing-library/react
+```
+
+comprobando además que tanto Jest como esta librería están recogidas dentro del fichero `package.json`:
+
+```json
+"devDependencies": {
+  "@testing-library/react": "^9.5.0",
+  "jest": "^24.9.0"
+}
+```
+
+---
+
+Si ahora ejecutamos los test que tenemos recogidos en nuestra aplicación como hemos hecho hasta ahora veremos que se produce un error porque no se está pasando uno de ellos:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ FAIL  src/shared/__tests__/auto-scaling-text.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+```
+
+¿Cuál es el problem aquí? Pues básicamente que dentro del archivo que tiene el código de React para nuestro componente se están haciendo las siguientes importaciones:
+
+```js
+import React from 'react'
+import PropTypes from 'prop-types'
+import styles from './auto-scaling-text.module.css'
+```
+
+y si nos vamos al archivo en el que se definen los estilos CSS para nuestro componente lo que nos vamos a encontrar es algo parecido a lo siguiente, lo cual es correcto.
+
+```css
+.auto-scaling-text {
+  display: inline-block;
+  padding: 0 30px;
+  position: absolute;
+  right: 0;
+  transform-origin: right;
+}
+```
+
+¿Qué problema hay entonces? Pues que como hemos explicado anteriormente Jest trata de solucionar todas las sentencias `import` que se encuntra en el código que se está ejecutando gracias a la resolución de módulos de NodeJS y por lo tanto cuando va a importar el contenido del fichero `auto-scaling-text.module.css` se encuentra con la palabra `.auto-scaling-text` no siendo esta un identificador válido para JavaScript (dicho de otra manera Jest espera encontrar código JavaScript pero se está encontrando con código CSS lo que provoca un error).
+
+
+```bash
+Details:
+  /media/josemanuel/data/learning/testing-react/src/shared/auto-scaling-text.module.css:1
+  ({"Object.<anonymous>":function(module,exports,require,__dirname,__filename,global,jest){.auto-scaling-text {
+                                                                                           ^
+
+  SyntaxError: Unexpected token .
+```
+
+Jest no solamente nos está informando del problema que se encuentra sino que además del mensaje de error también nos está ofreciendo una serie de alternativas que permitan ayudarnos a corregirlo:
+
+```bash
+Here's what you can do:
+  • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+  • If you need a custom transformation specify a "transform" option in your config.
+  • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+```
+
+En este caso en concreto de entre las tres que tenemos a nuestra disposición la que a nosotros nos interesa es lo que se conoce como la utilización de los `moduleNameMapper` que básicamente viene a indicar que cuando nos encontremos con un determinado módulo durante la realización de los test queremos que Jest utilice una versión mock del mismo evitando este tipo de problemas. Pero ¿donde vamos a indicarle esto a Jest? Pues nuevamente en el archivo `jest.config.js` dentro de la aplicación.
+
+En concreto el el objeto que exportamos dentro de este fichero lo que vamos a hacer es definir el atributo `moduleNameMapper` el cual va a recibir como valor un objeto en el que podemos expresar como atributos o bien el nombre de un fichero o bien una expresión regular qué fichero es el que será utilizado en vez del que originalmente se está importando. Por ejemplo, en nuestro caso lo que vamos a querer hacer es que todos los archivos CSS que están recogidos en el proyecto y son importados por los componentes de React (cosa que recogeremos con una expresión de regular) se resuelvan con el archivo `style-mock.js` que vamos a crear dentro del directorio `test` de nuestro proyecto (cosa que logramos gracias al uso del método `require` del objeto `resolve` que NodeJS pone a nuestra disposición de forma global):
+
+```js
+module.exports = {
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '\\.css$': require.resolve('./test/style-mock.js')
+  }
+}
+```
+
+Nos queda por crear el fichero `style-mock.js` dentro del directorio `test` de nuestra aplicación donde simplemente vamos a exportar un objeto completamente vacío.
+
+```js
+module.exports = {}
+```
+
+Con todos estos cambios en el proyecto si ahora volemos a ejecutar los test de nuestra aplicación nos vamos a encontrar con los siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+```
+
+Es más, si dentro del código de nuestro componente de React y a efectos únicamente de realización de los test escribimos por la consola el contenido del objeto `styles` que ha sido importado cuando ejecutemos los test veremos cómo se el valor dle mismo será el objeto vacío. Es decir, si escribimos lo siguiente:
+
+```js
+import React from 'react'
+import PropTypes from 'prop-types'
+import styles from './auto-scaling-text.module.css'
+
+console.log(styles)
+```
+
+Y ejecutamos nuevamente los test nos vamos a encontrar con el siguiente mensaje en la consola:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+  ● Console
+
+    console.log src/shared/auto-scaling-text.js:5
+      {}
+```
+
+Por lo tanto si además modificamos el contenido del fichero que hace de mock (el fichero `style-mock.js` en los archivos CSS escribiendo lo siguiente:
+
+```js
+module.exports = {
+  hello: 'world'
+}
+```
+
+nos vamos a encontrar que cuando volvamos a ejecutar nuestro test por la consola del sistema va a aparecer un mensaje como el siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+  ● Console
+
+    console.log src/shared/auto-scaling-text.js:5
+      { hello: 'world' }
+```
+
+---
+**Nota:** ¿cómo puede nuestra aplicación gestionar correctamente la importación de módulos con contenido CSS? Pues aquí es nuevamente donde entra en juego Webpack ya que lo en la configuración del mismo se le está indicando que en el caso de los archivos que tienen las extensiones `.css` o `.module.css` se ha de aplicar los loaders `style-loader` y `css-loader` como sigue:
+
+```js
+rules: [
+  {
+    test: /\.css$/,
+    exclude: /\.module\.css$/,
+    use: [
+      { loader: 'style-loader' },
+      { loader: 'css-loader' }
+    ]
+  },
+  {
+    test: /\.module\.css$/,
+    use: [
+      { loader: 'style-loader' },
+      {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+          localsConvention: 'camelCase'
+        }
+      }
+    ]
+  }
+]
+```
+
+No obstante, el código anterior se muestra con el propósito de tener la información completa de la explicación que se está llevando a cabo pero en ningún momento se trata de una explicación detallada de cómo funciona o cómo se configura Webpack.
+
+---
+
+Vamos a ir paso más adelante en lo que respecta en la importanción de CSS y lo que vamos a hacer es quedarnos con el método `debug` que se obtiene como resultado de la invocación del método `render` en la ejecución de nuestro test con el fin de invocarlo y poder así obtener por la consola cuál es el marcado html que realmente se está obteniendo como resultado de la renderización del componente:
+
+```js
+test('renders', () => {
+  const { debug } = render(<AutoScalingText />)
+  debug()
+})
+```
+
+Si ahora volvemos a ejecutar nuestro test en la consola obtendremos la siguiente información:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+  ● Console
+
+    console.log node_modules/@testing-library/react/dist/pure.js:94
+      <body>
+        <div>
+          <div
+            data-testid="total"
+            style="transform: scale(1,1);"
+          />
+        </div>
+      </body>
+```
+
+A continuación mostramos únicamente el código del componente `AutoScalingText` que se encarga de generar el marcado del elemento que se renderizará dentro del DOM:
+
+```js
+<div
+  className={ styles.autoScalingText }
+  style={{ transform: `scale(${ scale },${ scale })` }}
+  ref={ nodeRef }
+  data-testid='total'
+>
+  { children }
+</div>
+```
+
+¿Qué diferencias hay? Tenemos el atributo `data-testid`, tenemos el atributo `style` (con los valores calculados), no tenemos el atributo `ref` (cosa que esperábamos ya que se trata de un atributo que únicamente tiene sentido para React y no se le pasa al elemento html que se renderiza) pero ha desaparecido el atributo `class` que debería ser generamos como consecuencia de la interpretación del atributo `className` dentro del código JSX. 
+
+Pero ¿por qué sucede esto? Pues porque dentro del código JSX se está haciendo referencia al objeto `styles` que hemos mapeado para la ejecución de nuestros test como un objeto vacío por lo que en ningún momento va a poder encontrar el atributo `autoScalingText` dentro del mismo. Es decir, que cuando el código JSX va a evaluar `styles.autoScalingText` comprueba que es `undefined` (no existe el atributo) y un valor `undefined` que es asignado a un atributo (en este caso `className`) hace que en la traducción del elemento a código html lo que suceda en última instancia es que no se escriba el atributo en el marcado html.
+
+Lo realmente interesante aquí es que podría darse la situación en la que el nombre de la clase CSS que se asignara al elemento fuese dada en función de un expresión o mediante código (algo como lo siguiente):
+
+```js
+className={ styles.autoScalingText ? 'something' : null }
+```
+
+y por lo tanto que fuésemos capaces de realizar test sobre la existencia o no esta clase independientemente de luego como las gestione Webpack a la hora de realizar el bundle de la aplicación. Pero ¿cómo lo vamos a lograr? 
+
+Lo primero es instalar una nueva dependencia de desarrollo dentro de nuestro proyecto, en concreto la librería `identity-obj-proxy`:
+
+```bash
+$ npm install --save-dev identity-obj-proxy
+```
+
+y una vez instalada ya podemos irnos a nuestro fichero con la configuración de Jest para definir un nuevo `moduleNameMapper` en este caso para todas las importaciones de los archivos que tienen la extensión `.module.css` ya que son los que serán importados dentro del código de nuestros componentes. Así pues, cuando nos encontremos con una importación de este tipo el mock que se ha de utilizar es el que va a proporcionar la librería que acabamos de instalar.
+
+```js
+module.exports = {
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '\\.module\\.css$': 'identity-obj-proxy',
+    '\\.css$': require.resolve('./test/style-mock.js')
+  }
+}
+```
+
+>
+> El orden de los atributos es importante ya que Jest los chequea en el orden en el que se está describiendo y aplicará el primero que cumpla la expresión regular. En definitiva deberíamos escribir siempre en primer lugar los que sean más especifícos hasta llegar a los más generales.
+>
+
+Hecho esto si ahora volvemos a ejecutar nuestros test en la consola nos encontramos con lo siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+  ● Console
+
+    console.log node_modules/@testing-library/react/dist/pure.js:94
+      <body>
+        <div>
+          <div
+            class="autoScalingText"
+            data-testid="total"
+            style="transform: scale(1,1);"
+          />
+        </div>
+      </body>
+```
+
+Es decir, que `identitity-obj-proxy` lo que está haciendo es devovler un string cuyo valor es el mismo que el del path de la propiedad a la que se quiere acceder dentro del objeto proxy. Así, si el objeto proxy es `styles` y estamos accediendo a `styles.autoScalingText` el valor del path que retornará será `autoScalingText`.
+
+Esta técnica nos va a permitir realizar aserciones dentro del valor de las clases CSS que se asignarán al marcado de los elementos de nuestros componentes incluso si estas se asignan en tiempo de ejecución.
