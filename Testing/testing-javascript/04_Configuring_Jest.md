@@ -5,6 +5,7 @@
 - Compile Modules with Babel in Jest Tests.
 - Testing Browser or NodeJS.
 - Support Importing CSS Files.
+- Generate a Serializable Value.
 
 # Introduction.
 
@@ -642,3 +643,380 @@ $ npm run test
 Es decir, que `identitity-obj-proxy` lo que está haciendo es devovler un string cuyo valor es el mismo que el del path de la propiedad a la que se quiere acceder dentro del objeto proxy. Así, si el objeto proxy es `styles` y estamos accediendo a `styles.autoScalingText` el valor del path que retornará será `autoScalingText`.
 
 Esta técnica nos va a permitir realizar aserciones dentro del valor de las clases CSS que se asignarán al marcado de los elementos de nuestros componentes incluso si estas se asignan en tiempo de ejecución.
+
+## Generate a Serializable Value
+
+Supongamos ahora que tenemos un archivo dentro de nuestro proyecto en el que recogemos la lista de superhéroes que apaceren en la película Los Increíbles de Disney y dentro del mismo además definimos una función que se encargará de devolvernos cuáles de ellos tienen la capacidad de volar. El aspecto del código de este fichero podría ser algo como lo siguiente:
+
+```js
+const superHeros = [
+  { name: 'Dynaguy', powers: ['disintegration ray', 'fly'] },
+  { name: 'Apogee', powers: ['gravity control', 'fly'] },
+  { name: 'Blazestone', powers: ['control of fire', 'pyrothechinc dischargers'] },
+  { name: 'Frozone', powers: ['freeze water'] },
+  { name: 'Mr. Incredible', powers: ['physical stretch'] },
+  { name: 'Elastigirl', powers: ['physical stretch'] },
+  { name: 'Violet', powers: ['invisibility', 'force fields'] },
+  { name: 'Dash', powers: ['speed'] }
+  // { name: 'Jack Jack', powers: [ 'shapeshifting', 'fly' ]}
+]
+
+function getFlyingSuperHeros() {
+  return superHeros.filter(hero => {
+    return hero.powers.includes('fly')
+  })
+}
+
+export { getFlyingSuperHeros }
+```
+
+Nuesto objetivo va a ser testear la función `getFlyingSuperHeros` por lo que siguiendo el patrón que hemos estado utilizando hasta ahora y suponiendo que el contenido anterior está recogido dentro del fichero `super-heros.js` en el directorio `other` que a su vez es un subdirectorio de `src` dentro de nuestro proyecto, lo que vamos a hacer es crear el subirectorio `__tests__` dentro de `other` y en el mismo el archivo que va a contener el código de nuestro test (archivo que llamamos `super-heros.js`) empezando con algo como esto:
+
+```js
+import { getFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+})
+```
+
+donde lo que queremos hacer es verificar que todos los elementos que forman parte del array que es retornado por la invocación de la función `getFlyingSuperHeros` van a ser superhéroes que poseen el superpoder de volar. Pero ¿cómo lo vamos a lograr? 
+
+En una primera aproximación lo que vamos a poder hacer es irnos al fichero que contiene toda la definición de los superhéroes con los que estamos trabajando y de forma manual copiar y pegar todos aquellos que tienen el superpoder de volar para realizar la comparación, es decir, algo como lo siguiente:
+
+```js
+import { gegetFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+  expect(flyingHeros).toEqual([
+    { name: 'Dynaguy', powers: ['disintegration ray', 'fly'] },
+    { name: 'Apogee', powers: ['gravity control', 'fly'] }
+  ])
+})
+```
+
+Si en este momento ejecutamos los test dentro del proyecto vamos a ver que el resultado de que obtenemos es que todos ellos pasarán sin problemas:
+
+```bash
+$ npm run test
+
+ PASS  src/other/__tests__/super-heros.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/shared/__tests__/utils.js
+```
+
+Como en este momento todos los test con los que estamos trabajando estarán correctos lo que haríamos sería incluir los cambios que hemos llevado a cabo dentro de nuestro repositorio de git como sigue:
+
+```bash
+$ git add .
+$ git commit -m 'add assertion'
+[master (root-commit) 4010bd2] add assertion
+ 14 files changed, 14307 insertions(+)
+```
+
+¿Qué es lo que puede ocurrir a partir de este punto? Pues simplemente que a medida que avanza la vida de la aplicación alguien se puede dar cuenta de que nos hemos olvidado de uno de los personajes de la película, Jack Jack, y por lo tanto lo introducimos en el array con todos los personajes de las mismas junto con los superpoderes que tiene asociados entre los que se encuentra el de volar. Esto nos deja la lista de personajes de partida tal y como sigue:
+
+```js
+const superHeros = [
+  { name: 'Dynaguy', powers: ['disintegration ray', 'fly'] },
+  { name: 'Apogee', powers: ['gravity control', 'fly'] },
+  { name: 'Blazestone', powers: ['control of fire', 'pyrothechinc dischargers'] },
+  { name: 'Frozone', powers: ['freeze water'] },
+  { name: 'Mr. Incredible', powers: ['physical stretch'] },
+  { name: 'Elastigirl', powers: ['physical stretch'] },
+  { name: 'Violet', powers: ['invisibility', 'force fields'] },
+  { name: 'Dash', powers: ['speed'] },
+  { name: 'Jack Jack', powers: ['shapeshifting', 'fly'] }
+]
+```
+
+¿Qué es lo que va a ocurrir ahora si ejecutamos nuevamente nuestros test? Pues que van a fallar porque se ha icluido un nuevo personaje con el superpoder de volar y este no está recogido en la aserción que estamos realizando.
+
+```bash
+$ npm run test
+
+ FAIL  src/other/__tests__/super-heros.js
+  ● returns super heros that can fly
+```
+
+¿Qué tendriamos que hacer para corregir esta situación? Pues añadir el elemento que representa al nuevo personaje en el array con el que vamos a realizar la aserción de forma manual. Así escribiríamos algo como lo siguiente:
+
+```js
+import { gegetFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+  expect(flyingHeros).toEqual([
+    { name: 'Dynaguy', powers: ['disintegration ray', 'fly'] },
+    { name: 'Apogee', powers: ['gravity control', 'fly'] },
+    { name: 'Jack Jack', powers: ['shapeshifting', 'fly'] }
+  ])
+})
+```
+
+y si ahora volvemos a ejecutar los test de nuestra aplicación nos vamos a encontrar con que pasarán de forma correcta:
+
+```bash
+$ npm run test
+
+ PASS  src/other/__tests__/super-heros.js
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/shared/__tests__/utils.js
+```
+
+Como nuevamente se están pasando todos los test lo que haremos será guardar todos los cambios que tenemos dentro de nuestro repositorio de git como sigue:
+
+```bash
+$ git add .
+$ git commit -m 'jack-jack can fly!'
+[master 58ecd76] jack-jack can fly!
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+```
+
+y el siguiente paso que deberíamos dar sería realizar un pull request a nuestro reposotorio compartido (pudiendo estar, por ejemplo, en GitHub) en el que indicaríamos cuáles son las diferencias que hay en nuestro código.
+
+Como se puede observar son varios los pasos que tenemos que dar para poder realizar un test similar al que acabamos de describir, pasos que además se nos pueden olvidar o que pueden tener fallos, por lo que sería fantástico que existiera una herramienta que nos permitiera realizarlo por nosotros y es aquí donde entran lo que se conoce como los **Test Snapshot** (test de instantánea).
+
+Vamos a retrocer un poco en nuestro ejemplo al momento en el que todavía no sabíamos de la existencia del personaje de Jack-Jack (lo que se traduce en que comentaremos su elemento del array de superhéroes dentro del fichero `super-heros.js` que contiene el código que estamos probando) además de que vamos a modificar el código de nuestro test para que quede tal y como sigue:
+
+```js
+import { getFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+  expect(flyingHeros).toMatchSnapshot()
+})
+```
+
+es decir que en vez de hacer una comprobación con alguno de los métodos que nos ofrece la librería de aserciones de Jest (como era el caso de la invocación del método `toEqual` que hemos visto anteriormente) lo que vamos a hacer es invocar al método `toMatchSnapshot`. Si ahora volvemos a ejecutar nuestro test obtenemos lo siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/other/__tests__/super-heros.js
+ › 1 snapshot written.
+
+ Snapshot Summary
+ › 1 snapshot written from 1 test suite.
+```
+
+¿Qué diferencia podemos apreciar en los mensajes que se escriben en la consola? Pues que asociado a la ejecución del último de los test (el que está relacionado con los superhéroes) Jest nos informa de que se ha escrito una snapshot y no solamente eso sino que además nos informa de que como resultado de la ejecución de todos los test se ha escrito una nueva snapshot. Pero ¿esto en qué se traduce? Pues en que dentro del directorio `__tests__` donde está nuestro archivo con los test que se están ejecutando se ha creado un nuevo directorio `__snapshots__` y en el mismo nos encontraremos con el fichero `super-heros.js.snap`
+
+<div>
+  <img src="./images/ch04/04_02.png">
+</div>
+<br/>
+
+¿Y qué es lo que contiene este archivo? Pues algo parecido a lo siguiente:
+
+```js
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns super heros that can fly 1`] = `
+Array [
+  Object {
+    "name": "Dynaguy",
+    "powers": Array [
+      "disintegration ray",
+      "fly",
+    ],
+  },
+  Object {
+    "name": "Apogee",
+    "powers": Array [
+      "gravity control",
+      "fly",
+    ],
+  },
+]
+`;
+```
+
+En lo primero que tenemos que fijarnos es en el nombre del array que acompaña a `exports` que no es más que el nombre de nuestro test *returns super heros that can fly* seguido del número de snapshot que se ha realizado (en este caso al ser la primera vez que se realiza una snapshot va a ser 1). El valor del elemento va a ser un string que se corresponde con la serialización de la salida de la ejecución de la función que se está testeando (en este caso se trata de la serialización de los objetos que retorna la invocación de la función `getFlyingSuperHeros` la primera vez).
+
+Con este nuevo cambio vamos a volver a realizar un commit a nuestro repositorio local ya que nuevamente estaremos pasando todos los test para nuestra aplicación:
+
+```bash
+$ git add .
+$ git commit -m 'add assertion'
+[master 1432652] add assertion
+ 3 files changed, 23 insertions(+), 7 deletions(-)
+ create mode 100644 src/other/__tests__/__snapshots__/super-heros.js.snap
+```
+
+Si ahora nos damos cuenta de la existencia del personaje Jack-Jack y además que este puede volar (es decir, volvemos a establecer el elemento del array de superhéroes con el que estamos trabajando) si ejecutamos nuestros test nos vamos a encontrar con lo siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ FAIL  src/other/__tests__/super-heros.js
+  ● returns super heros that can fly
+
+    expect(received).toMatchSnapshot()
+
+    Snapshot name: `returns super heros that can fly 1`
+
+    - Snapshot
+    + Received
+```
+
+es decir, que JEst nos informa de que el test no se ha podido ejecutar de forma correcta ya que el valor que tiene recogido dentro del snapshot no es el mismo que el que ahora ha proporcionado como resultado la ejecución de la función. Pero podemos ir un poco más allá ya que también Jest en la salida nos está informando de lo siguiente:
+
+```bash
+Snapshot Summary
+ › 1 snapshot failed from 1 test suite. Inspect your code changes or run `npm test -- -u` to update them.
+```
+
+En nuestro caso está claro que lo que sucede es que Jest debería actualizar la snapshot que está asociada a la ejecución del test para que incluya al nuevo persona por lo que tendríamos que volver a ejecutar lo siguiente:
+
+```bash
+$ npm run test -- -u
+
+ PASS  src/other/__tests__/super-heros.js
+ › 1 snapshot updated.
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/shared/__tests__/utils.js
+
+Snapshot Summary
+ › 1 snapshot updated from 1 test suite.
+```
+
+y lo que hace Jest es ejecutarse con el flag `-u` que se hace únicamente con el propósito de que actualizar la información de todas las posibles snapshots que pudiésemos tener asociadas a nuestros test. Es más, esto lo podemos comprobar si nos vamos a la snapshot con la que estamos trabajando donde veremos que se incluye al nuevo persona:
+
+```js
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns super heros that can fly 1`] = `
+Array [
+  Object {
+    "name": "Dynaguy",
+    "powers": Array [
+      "disintegration ray",
+      "fly",
+    ],
+  },
+  Object {
+    "name": "Apogee",
+    "powers": Array [
+      "gravity control",
+      "fly",
+    ],
+  },
+  Object {
+    "name": "Jack Jack",
+    "powers": Array [
+      "shapeshifting",
+      "fly",
+    ],
+  },
+]
+`;
+```
+
+Por lo tanto podemos decir que una **Snapshot** es un tipo de aserción especial dentro de Jest que vive en dos lugares dentro del código: por una parte en el propio código que forma parte de la ejecución del test y por una parte en el fichero que contiene la información de la misma.
+
+Uno de los problemas al que nos enfrentaremos cuando estamos utilizando este tipo de test es que el tamaño de los archivos que contienen nuestras snapshot puede ser bastante elevado (el ejemplo que hemos puesto es relativamente sencillo) por lo que una de las recomendaciones que se hace es utilizar el método `toMatchInlineSnapshot` a la hora de hacer la aserción como sigue:
+
+```js
+import { getFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+  expect(flyingHeros).toMatchInlineSnapshot()
+})
+```
+
+Si ahora lo que hacemos es volver a ejecutar los test de nuestra aplicación la salida que obtenemos por la consola es algo parecido a lo siguiente:
+
+```bash
+$ npm run test
+
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/shared/__tests__/utils.js
+ PASS  src/other/__tests__/super-heros.js
+ › 1 snapshot written.
+ › 1 snapshot obsolete.
+   • returns super heros that can fly 1
+```
+
+pero aquí lo realmente interesante es que la ejecución de Jest ha sido capaz de identificar el snapshot contra el que realizar la comprobación y establecerlo como parámetro de del método `toMatchInlineSnapshot` por nosotros de forma automática. Esto hace que el contenido de nuestro fichero de test quede como sigue:
+
+```js
+import { getFlyingSuperHeros } from '../super-heros'
+
+test('returns super heros that can fly', () => {
+  const flyingHeros = getFlyingSuperHeros()
+  expect(flyingHeros).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "name": "Dynaguy",
+        "powers": Array [
+          "disintegration ray",
+          "fly",
+        ],
+      },
+      Object {
+        "name": "Apogee",
+        "powers": Array [
+          "gravity control",
+          "fly",
+        ],
+      },
+      Object {
+        "name": "Jack Jack",
+        "powers": Array [
+          "shapeshifting",
+          "fly",
+        ],
+      },
+    ]
+  `)
+})
+```
+
+---
+**Nota:** para poder utilizar el método `toMatchInlineSnapshot` es necesirio tener instalado como una dependencia de desarrollo `prettier` tal y como sigue:
+
+```bash
+$ npm install --save-dev prettier 
+```
+
+---
+
+Por lo tanto de forma automática estaremos realizando nuestro test de snapshot, se estará formateando el código y no deberíamos preocuparnos más por el directorio y los archivos que contienen nuestros snapshot. De hecho si ejecutamos Jest con el flag `--u` se actualizará la snapshot en el parámetro que se está pasando al método por nosotros.
+
+Ahora bien, la ejecución del test anterior nos está reportando también que hay una serie de errores derivados de la existencia de vistas obsoletas, como se puede apreciar a continuación:
+
+```bash
+Snapshot Summary
+ › 1 snapshot written from 1 test suite.
+ › 1 snapshot obsolete from 1 test suite. To remove it, run `npm test -- -u`.
+   ↳ src/other/__tests__/super-heros.js
+       • returns super heros that can fly 1
+```
+
+Para solucionarlo simplemente deberemos ejecutar Jest pasándole el flag `--u` como podemos ver a continuación:
+
+```bash
+$ npm run test -- -u
+
+ PASS  src/shared/__tests__/auto-scaling-text.js
+ PASS  src/other/__tests__/super-heros.js
+ › snapshot file removed.
+ PASS  src/shared/__tests__/utils.js
+
+Snapshot Summary
+ › 1 snapshot file removed from 1 test suite.
+```
+
+lo que provocará que Jest borre por nosotros el archivo que contiene la información de nuestro snapshot porque ya no la vamos a utilizar más.
+
+### Snapshot Test & DOM.
+
+Vamos ahora a centrarnos en la aplicación de los test Snapshot pero esta vez aplicado a los nodos del DOM dentro de una página web para lo cual vamos a testear el componente de React `CalculatorDisplay` que está recogido en el directorio `shared` dentro de nuestro proyecto y cuyo contenido es el que se muestra a continuación:
+
+```
