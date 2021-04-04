@@ -4,6 +4,9 @@
 - Render a Component for Testing.
 - Use Jest DOM for Improving Assertions.
 - Use DOM Testing Library to Write More Maintainable Test.
+- Use React Testing Library to Render and Test.
+- Debug the DOM State During the Test.
+- Test React Component Event Handlers.
 
 ## Introduction.
 
@@ -441,11 +444,216 @@ test('renders a number input with a label "Favorite Number"', () => {
 > Se recomienda leer el documentación en la [página de GitHub](https://github.com/testing-library/dom-testing-library) de la librería `@testing-library/dom` para tener el listado completo de los métodos que tenemos a nuestra disposición para poder realizar las búsqueda de los elementos hijos a partir de un nodo contenedor.
 >
 
+## Use React Testing Library to Render and Test
 
+Si seguimos avanzando en el estudio de cómo probar nuestros componentes de React podemos ver que en el código de nuestros test va a haber una serie de pasos que lo más probable es que se repitan constantemente a lo largo de todos ellos y generalmente serían las tres primeras instrucciones del último test que hemos recogido en el punto anterior:
 
+```js
+const div = document.createElement('div')
+ReactDOM.render(<FavoriteNumber />, div)
+const { getByLabelText } = getQueriesForElement(div)
+```
 
+Pensemos un poco más en cómo podríamos hacer para tener una abstracción dentro del código de nuestros test que recogiese el contenido de estas tres instrucciones entendiendo por abstracción la realización de una función que nos facilite nuestro trabajo. Así podríamos comenzar escribiendo algo como lo siguiente:
 
+```js
+function render(ui) {
+  const container = document.createElement('div')
+  ReactDOM.render(ui, container)
+  const queries = getQueriesForElement(container)
+  return { container, ...queries}
+}
+```
 
+¿Qué es lo que hemos realizado en el código anterior? Pues si nos paramos a observalo lo estamos creando nuevamente un elemento html `div` pero en este caso lo estaremos denominando como `container` ya que nuestra intención es que dicho nodo sea el que contendrá el elemento (componente de React) que se recibe como parámetro y que hemos generalizado con el nombre `ui`. Además hemos hecho la invocación a la función `getQueriesForElement` para obtener el objeto con todos los métodos que nos van a permitir realizar consultas sobre el componente para en última instancia retonar un objeto que tendrá el contenedor del componente y todos los métodos para realizar nuestros test.
+
+Con este código dentro de nuestros test ya podemos sustituir el código que teníamos hasta ahora mediante una llamada a esta nueva función como se puede ver a continuación:
+
+```js
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { FavoriteNumber } from '../favorite-number'
+import '@testing-library/jest-dom/extend-expect'
+import { getQueriesForElement } from '@testing-library/dom'
+
+function render(ui) {
+  const container = document.createElement('div')
+  ReactDOM.render(ui, container)
+  const queries = getQueriesForElement(container)
+  return { container, ...queries }
+}
+
+test('renders a number input with a label "Favorite Number"', () => {
+  const { getByLabelText } = render(<FavoriteNumber />)
+  const input = getByLabelText(/favorite number/i)
+  expect(input).toHaveAttribute('type', 'number')
+})
+```
+
+Si ahora ejecutamos nuevamente nuestros test veremos que el resultado es el mismo (el test pasa correctamente) por lo que si añadimos la función `render` que hemos definido a nuestro *code base* será posible que la utilicemos en cualquier lugar en el que vayamos a testear nuestros componentes de React. De hecho, esto es algo que pone a nuestra disposición la librería `@testing-library/react` por lo que, como siempre en primer lugar la instalamos como una dependencia de desarrollo:
+
+```bash
+$ npm install --save-dev @testing-library/react
+```
+
+Ahora podemos hacer una importación de la función `render` que nos ofrece la librería y utilizarla directamente en el código de nuestro test tal y como sigue (eliminando además las importaciones que ya no vamos a necesitar):
+
+```js
+import React from 'react'
+import { FavoriteNumber } from '../favorite-number'
+import '@testing-library/jest-dom/extend-expect'
+import { render } from '@testing-library/react'
+
+test('renders a number input with a label "Favorite Number"', () => {
+  const { getByLabelText } = render(<FavoriteNumber />)
+  const input = getByLabelText(/favorite number/i)
+  expect(input).toHaveAttribute('type', 'number')
+})
+```
+
+Si ahora volvemos a ejecutar el test nos encontraremos con un resultado como el que se muestra a continuación:
+
+```bash
+$ npm run test
+
+ PASS  src/react/__tests__/favorite-number.js
+  ✓ renders a number input with a label "Favorite Number" (26ms)
+```
+
+Así con el método `render` lo que en el fondo estamos logrando es una implementación de la librería `testing-library` propia para React lo cual nos va a ayudar en nuestro trabajo de realización de las pruebas en nuestro día a día como desarrolladores. El método `render` nos va a retonar un objeto en el que tendremos todos métodos que nos van a permitir consultar el DOM que recoge el marcado html correspondiente al componente de React.
+
+## Debug the DOM State During the Test.
+
+Entre el conjunto de métodos que nos retorna el objeto retornado por la función `render` que hemos visto es el método `debug` que al ser invocado nos va a permitir mostrar como parte del resultado de la ejecución del test el marcado html contra el que se han realizado las comprobaciones. En nuestro ejemplo podríamos hacer lo siguiente:
+
+```js
+import React from 'react'
+import { FavoriteNumber } from '../favorite-number'
+import '@testing-library/jest-dom/extend-expect'
+import { render } from '@testing-library/react'
+
+test('renders a number input with a label "Favorite Number"', () => {
+  const { getByLabelText, debug } = render(<FavoriteNumber />)
+  debug()
+  const input = getByLabelText(/favorite number/i)
+  expect(input).toHaveAttribute('type', 'number')
+})
+```
+
+donde vemos que nos estamos quedando con el la función `debug` que nos ha retornado el método `render` y posteriormente lo que hemos hecho ha sido invocarla para ver el marcado generado. Si ahora ejecutamos nuestro test obtenemos:
+
+```bash
+$ npm run test
+
+ PASS  src/react/__tests__/favorite-number.js
+  ✓ renders a number input with a label "Favorite Number" (45ms)
+
+  console.log node_modules/@testing-library/react/dist/pure.js:107
+    <body>
+      <div>
+        <div>
+          <label
+            for="favorite-number"
+          >
+            Favorite Number
+          </label>
+          <input
+            id="favorite-number"
+            type="number"
+            value="0"
+          />
+        </div>
+      </div>
+    </body>
+```
+
+Lo importante aquí es que siempre vamos a poder ver el estado del DOM de en el momento en el que se invoca al método `debug` en el lugar dentro del mismo (es decir, que puede mostrarnos un mensaje diferente si lo invocamos al principio o al final de nuestros tests). Y no solamente sino que el método `debug` puede recobir como parámetro un nodo del DOM para poder ver el marcado que esta asociado al mismo. Por poner un ejemplo:
+
+```js
+import React from 'react'
+import { FavoriteNumber } from '../favorite-number'
+import '@testing-library/jest-dom/extend-expect'
+import { render } from '@testing-library/react'
+
+test('renders a number input with a label "Favorite Number"', () => {
+  const { getByLabelText, debug } = render(<FavoriteNumber />)
+  const input = getByLabelText(/favorite number/i)
+  expect(input).toHaveAttribute('type', 'number')
+  debug(input)
+})
+```
+
+Si ahora ejecutamos nuestro test el resultado que vamos a obtener es el que se muestra a continuación, como podemos ver a continuación:
+
+```bash
+$ npm run test
+
+ PASS  src/react/__tests__/favorite-number.js
+  ✓ renders a number input with a label "Favorite Number" (30ms)
+
+  console.log node_modules/@testing-library/react/dist/pure.js:107
+    <input
+      id="favorite-number"
+      type="number"
+      value="0"
+    />
+```
+
+## Test React Component Event Handlers.
+
+Si volvemos al código de nuestro componente `FavoriteNumber` tenemos que recordar que se mostrará un mensaje de error en el caso de que el valor que escriba el usuario en campo de texto esté comprendido fuera del intervalo de valores mínimo y máximo que se han proporcionado como props. Nuestro objetivo ahora será comprobar que se está muestra el mensaje de error cuando así es el caso por lo que empezamos escribiendo el siguiente test:
+
+```js
+import React from 'react'
+import { render } from '@testing-library/react'
+import { FavoriteNumber } from '../favorite-number'
+
+test('entering an invalid value shows an error message', () => {})
+```
+
+¿Qué deberemos hacer ahora? Pues en primer lugar hacer uso de la función `render` que hemos importado pasándole como parámetro el componente que queremos renderizar (en nuestro caso `FavoriteNumber`) y vamos a quedarnos con el método `getByLabelText` para que poder acceder al campo de texto en el que introducideros el número a testear. Por lo tanto escribiremos:
+
+```js
+import React from 'react'
+import { render } from '@testing-library/react'
+import { FavoriteNumber } from '../favorite-number'
+
+test('entering an invalid value shows an error message', () => {
+  const { getByLabelText } = render(<FavoriteNumber />)
+  const input = getByLabelText(/favorite number/i)
+})
+```
+
+¿Cómo podemos hacer ahora para lanzar el evento `onChange` en este elemento `input`? La respuesta es hacer uso del objeto `fireEvent` que nos ofrece también `@testing-library/react` (aunque en realidad está siendo proporcionado por la librería `@testing-library/dom` pero viene encapsulado dentro de la implementación de esta librería para React que lo que realmente hace es reexportarla añadiendo alguna característica adicional al mismo propia de React). Para poderlo utilizar lo que tenemos que hacer es, en primer lugar importala:
+
+```js
+import { render, fireEvent } from '@testing-library/react'
+```
+
+Este objeto nos ofrece una serie de métodos que servirán para lanzar los diferentes eventos sobre los elementos del DOM con los que se está trabajando. En nuestro caso lo que queremos es lanzar un evento del tipo `onChange` sobre el campo `input` por lo que tendremos que invocar al método `change` del objeto `fireEvent` al que le tendremos que pasar como primer parámetro el elemento html sobre el que lanzar el evento y como segundo parámetro se deberá pasar un objeto que ha de tener la misma estructura de atributos que el evento que vamos a tratar. En nuestro caso la función dentro del componente que se encargará de gestionar los eventos `onChange` tiene el siguiente aspecto:
+
+```js
+function handleChange(event) {
+  setNumber(Number(event.target.value))
+  setNumberEntered(true)
+}
+```
+
+Como podemos ver el objeto que recibe la función que gestionará el evento es el objeto que se le está pasando como parámetro (el objeto `event`) y en concreto se está consultando su atributo `target` y dentro del mismo a su vez tiene asignado un objeto que tiene asociado el atributo `value` que es el que tendrá el valor que ha introducido el usuario en el campo de texto. Basándonos en esto la simulación del lanzamiento del evento se realizará de la siguiente manera:
+
+```js
+import React from 'react'
+import { render, fireEvent } from '@testing-library/react'
+import { FavoriteNumber } from '../favorite-number'
+
+test('entering an invalid value shows an error message', () => {
+  const { getByLabelText } = render(<FavoriteNumber />)
+  const input = getByLabelText(/favorite number/i)
+  fireEvent.change(input, { target: { value: '10' }})
+})
+```
+
+Como el valor que hemos escrito es superior al valor del extremo superior que hemos definido para el intervalo de valores posibles se deberá mostrar en el marcado html un mensaje de alerta informando de que el valor no es válido.
 
 
 
