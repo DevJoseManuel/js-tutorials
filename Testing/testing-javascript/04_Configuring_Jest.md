@@ -30,7 +30,7 @@ Cuando todo el proceso de instalación de las dependecias de desarrollo finalice
 
 ```json
 "devDependencies": {
-  "jest": "^24.9.0"
+  "jest": "^26.6.3"
 }
 ```
 
@@ -864,7 +864,7 @@ $ npm run test
     + Received
 ```
 
-es decir, que JEst nos informa de que el test no se ha podido ejecutar de forma correcta ya que el valor que tiene recogido dentro del snapshot no es el mismo que el que ahora ha proporcionado como resultado la ejecución de la función. Pero podemos ir un poco más allá ya que también Jest en la salida nos está informando de lo siguiente:
+es decir, que Jest nos informa de que el test no se ha podido ejecutar de forma correcta ya que el valor que tiene recogido dentro del snapshot no es el mismo que el que ahora ha proporcionado como resultado la ejecución de la función. Pero podemos ir un poco más allá ya que también Jest en la salida nos está informando de lo siguiente:
 
 ```bash
 Snapshot Summary
